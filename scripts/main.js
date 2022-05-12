@@ -62,7 +62,6 @@ let tabularRequested = false;
 /* LISTENS FOR BUTTON PRESSES FROM THE USER */
 document.querySelector('#clusterBtn').addEventListener('click', clusterClick);
 document.querySelector('#tabularBtn').addEventListener('click', tabularClick);
-document.querySelector('#editNode').addEventListener('click', editClick);
 document.querySelector('#applyChanges').addEventListener('click', submitEditCharacter);
 
 /* HANDLES WHAT HAPPENS WHEN THE USER CLICKS THE TABULAR BUTTON */
@@ -104,8 +103,8 @@ updateGraph();
    DATA IS THEN ASSIGNED TO APPROPRIATE VARIABLES*/
 function updateGraph() {
     Promise.all([
-        d3.csv("./data/asoiaf_" + book + "_edges.csv"),
-        d3.csv("./data/asoiaf_" + book + "_nodes.csv")
+        d3.csv(`./data/asoiaf-${book}-edges.csv`),
+        d3.csv(`./data/asoiaf-${book}-nodes.csv`)
     ]).then(files => {
         let links = files[0];
         let nodesFile = files[1];
