@@ -104,26 +104,8 @@ updateGraph();
    DATA IS THEN ASSIGNED TO APPROPRIATE VARIABLES*/
 function updateGraph() {
     Promise.all([
-        d3.json("/got/asoiaf_" + book + "_edges").then(function(json){
-            return json.map(function(d) {
-                return {
-                    interaction_id: d.InteractionID,
-                    source: d.SourceCharacter,
-                    target: d.TargetCharacter,
-                    weight: d.InteractionWeight,
-                    book: d.InteractionBook
-                };
-            });
-        }),
-        d3.json("/got/asoiaf_" + book + "_nodes").then(function(json){
-            return json.map(function(d) {
-                return {
-                    id: d.CharacterID,
-                    label: d.CharacterLabel,
-                    house: d.CharacterHouse
-                };
-            });
-        })
+        d3.csv("./data/asoiaf_" + book + "_edges.csv"),
+        d3.csv("./data/asoiaf_" + book + "_nodes.csv")
     ]).then(files => {
         let links = files[0];
         let nodesFile = files[1];
