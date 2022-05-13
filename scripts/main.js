@@ -62,6 +62,7 @@ let tabularRequested = false;
 /* LISTENS FOR BUTTON PRESSES FROM THE USER */
 document.querySelector('#clusterBtn').addEventListener('click', clusterClick);
 document.querySelector('#tabularBtn').addEventListener('click', tabularClick);
+document.querySelector('#editNode').addEventListener('click', editClick);
 document.querySelector('#applyChanges').addEventListener('click', submitEditCharacter);
 
 /* HANDLES WHAT HAPPENS WHEN THE USER CLICKS THE TABULAR BUTTON */
