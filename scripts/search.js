@@ -103,6 +103,11 @@ function searchSnackbar(){
     displaySnackbar(x)
 }
 
+function showcaseSnackbar(){
+    var x = document.getElementById("showcaseSnackbar");
+    displaySnackbar(x)
+}
+
 function displaySnackbar(snackbar) {
     // Get the snackbar DIV & edit its class
     var x = snackbar;
