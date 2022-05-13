@@ -74,7 +74,7 @@
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 }
 
-#editSnackbar.show, #searchSnackbar.show {
+#editSnackbar.show, #searchSnackbar.show, #showcaseSnackbar.show {
     visibility: visible;
     -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
     animation: fadein 0.5s, fadeout 0.5s 2.5s;
