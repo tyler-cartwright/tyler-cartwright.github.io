@@ -465,35 +465,7 @@ d3.select('.closebtn.left').on('click', closeEditNav);
 /* SUBMIT FORM ON EDIT INFO PANEL */
 function submitEditCharacter() {
 
-    // if nodeInfo.label == editName.value or nodeInfo.group == editHouse.value
-
-    let editName = document.getElementById("editName").value;
-    let editHouse = document.getElementById("editHouse").value;
-
-    if (editName !== cNodeInfo.label || editHouse !== cNodeInfo.group) {
-        var editedNode = {
-            ID: $('#editID').val(),
-            Label: $('#editName').val(),
-            House: $('#editHouse').val()
-        };
-
-        $.ajax({
-            url: '/got/asoiaf_' + book + '_nodes',
-            type: 'PUT',
-            data: JSON.stringify(editedNode),
-            contentType: "application/json;charset=utf-8",
-            success: function (data) {
-                closeEditNav();
-                updateGraph();
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR + '\n' + textStatus + '\n' + errorThrown);
-            }
-        });
-    }
-    else {
-        editSnackbar();
-    }
+    showcaseSnackbar();
 
 }
 
