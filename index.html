@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="styles/style.css" />
         <script src="scripts/jquery-1.10.2.min.js"></script>
         <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body>
 
@@ -68,7 +69,7 @@
                         <input
                                 type="text"
                                 id="myVal"
-                                placeholder="Search by Name&hellip;"
+                                placeholder="Search&hellip;"
                                 class="search-input"
                                 onkeyup= "handleSearch()"
                         />
@@ -88,7 +89,10 @@
                     Visualise the Houses of Westeros
                 </a>
                 <a id="tabularBtn" class="btn btn-unselected">
-                    See the Data in a Tabular Format
+                    Visualise the Interactions in Tabular Format
+                </a>
+                <a id="mostSignificantBtn" class="btn btn-unselected">
+                    Visualise the Most Significant Characters (Per Book)
                 </a>
 
             </div>
@@ -223,9 +227,30 @@
                     </form>
                 </div>
             </div>
+
+            <div id="mostSignificantInfo" class="sideTabular chart">
+                <a href="javascript:void(0)" class="closebtn chart">&times;</a>
+                <div class="tabular-content">
+                    <div class="tabular-image">
+                        <img
+                                id="mImage"
+                                class="image"
+                                src="./images/sideTabularLogo.png"
+                                alt="logo"
+                        />
+                    </div>
+                    <div class="chartCard">
+                        <div class="chartBox" style="height: 300px">
+                            <canvas id="sigChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             </br>
             </br>
             </br>
+
             <footer>
                 <p>&copy; Application Development - 100535381</p>
             </footer>

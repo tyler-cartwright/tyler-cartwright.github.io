@@ -58,17 +58,40 @@ function onBookChanged() {
 /* DETERMINES WHETHER THE USER WANTS TO GROUP BY HOUSE NAME */
 let groupHouses = false;
 let tabularRequested = false;
+let mstSigRequested = false;
 
 /* LISTENS FOR BUTTON PRESSES FROM THE USER */
 document.querySelector('#clusterBtn').addEventListener('click', clusterClick);
 document.querySelector('#tabularBtn').addEventListener('click', tabularClick);
+document.querySelector('#mostSignificantBtn').addEventListener('click', mstSigClick);
 document.querySelector('#editNode').addEventListener('click', editClick);
 document.querySelector('#applyChanges').addEventListener('click', submitEditCharacter);
+
+/* HANDLES THE CLICK OF THE MOST SIGNIFICANT CHARACTER BUTTON */
+function mstSigClick() {
+    closeInfoNav();
+    closeEditNav();
+
+    mstSigRequested = !mstSigRequested;
+    let btn = d3.select('#mostSignificantBtn');
+    btn.classed('btn-selected', mstSigRequested);
+
+    let infoPanel = d3.select('#mostSignificantInfo');
+
+    if (mstSigRequested) {
+        setSigPanel(infoPanel);
+    }
+    else {
+        closeSigNav();
+    }
+
+}
 
 /* HANDLES WHAT HAPPENS WHEN THE USER CLICKS THE TABULAR BUTTON */
 function tabularClick() {
     closeInfoNav();
     closeEditNav();
+    closeSigNav()
     document.getElementById("myVal").value = "";
 
     updateGraph();
@@ -84,6 +107,7 @@ function tabularClick() {
 /* HANDLES WHAT HAPPENS WHEN THE USER CLICKS THE EDIT BUTTON */
 function editClick() {
     closeInfoNav();
+    closeSigNav();
     let infoPanel = d3.select('#editCharacterInfo');
     setEditPanel(infoPanel, cNodeInfo);
 }
@@ -115,8 +139,16 @@ function updateGraph() {
         closeEditNav();
         closeInfoNav();
 
+        // IF THE SIG CLICK BUTTON IS ACTIVE, CALL MSTSIGCLICK()
+        if (mstSigRequested) {
+            mstSigClick();
+        }
+
         /* UPDATES THE TABLE WITH THE DATA */
         createInteractionsTable(links);
+
+        /* UPDATES THE SIDEBAR WITH THE DATA */
+        createSignificantChart(links);
 
         /* HOLDS NODE DATA SUCH AS ID, NAME AND HOUSE */
         nodesData = {};
@@ -264,6 +296,9 @@ function updateGraph() {
         /* HANDLE NODE CLICK WITH CHARACTER INFO PANEL */
         node.on('click', function(d) {
             closeEditNav();
+            if (mstSigRequested){
+                mstSigClick()
+            }
             let infoPanel = d3.select('#characterInfo');
             if (cInfoName !== '' && cInfoName === d.id) {
                 closeInfoNav(cInfoName);
@@ -362,7 +397,7 @@ function setInfoPanel(panel, node) {
     panel.style('width', '250px');
 }
 
-/* SET THE INFO PANEL TO INCLUDE CURRENT CHARACTER INFO*/
+/* SET THE EDIT PANEL TO INCLUDE CURRENT CHARACTER INFO*/
 function setEditPanel(panel, node) {
     panel.select('.extra').style('display', 'none');
     panel.style('width', '250px');
@@ -394,6 +429,12 @@ function setEditPanel(panel, node) {
     document.getElementById('editID').value = node.id;
     document.getElementById("editName").value = node.label;
     document.getElementById("editHouse").value = node.group;
+}
+
+/* SET THE MOST SIG PANEL TO INCLUDE CHARACTER INFO*/
+function setSigPanel(panel) {
+    panel.select('.extra').style('display', 'none');
+    panel.style('width', '350px');
 }
 
 /* SET THE TABULAR TABLE TO INCLUDE CURRENT CHARACTER INFO */
@@ -459,8 +500,14 @@ function closeEditNav() {
     cNodeInfo = [];
 }
 
+/* CLOSE SIG INFO PANEL */
+function closeSigNav() {
+    d3.select('.sideTabular.chart').style('width', 0);
+}
+
 d3.select('.closebtn.right').on('click', closeInfoNav);
 d3.select('.closebtn.left').on('click', closeEditNav);
+d3.select('.closebtn.chart').on('click', mstSigClick);
 
 /* SUBMIT FORM ON EDIT INFO PANEL */
 function submitEditCharacter() {
@@ -495,6 +542,107 @@ function createInteractionsTable(interactions) {
     });
     strResult += "</tbody></table>";
     $("#all-interactions").html(strResult);
+}
+
+/* POPULATES THE SIGNIFICANT SIDEBAR BAR CHART */
+function createSignificantChart(links){
+
+    let chartStatus = Chart.getChart("sigChart");
+    if (chartStatus !== undefined) {
+        chartStatus.destroy();
+    }
+
+    //for each interaction in files[0], find the target and weight of the interaction
+    //if the target is in the list of nodes, add the weight to the target's weight
+    //if the target is not in the list of nodes, add the target and weight to the list of nodes
+
+    var nodes = [];
+    for (var i = 0; i < links.length; i++) {
+
+        if(links[i].target.includes("Stark")){
+            var colour = "#7B9070";
+        }
+        else if(links[i].target.includes("Baratheon")){
+            var colour = "#E7D271";
+        }
+        else if(links[i].target.includes("Targaryen")){
+            var colour = "#A71414";
+        }
+        else if(links[i].target.includes("Tyrell")){
+            var colour = "#34936A";
+        }
+        else if(links[i].target.includes("Tully")){
+            var colour = "#4F729E";
+        }
+        else if(links[i].target.includes("Greyjoy")){
+            var colour = "#0D0D0D";
+        }
+        else if(links[i].target.includes("Lannister")){
+            var colour = "#BB6861";
+        }
+        else if(links[i].target.includes("Arryn")){
+            var colour = "#638497";
+        }
+        else if(links[i].target.includes("Martell")){
+            var colour = "#D99061";
+        }
+        else{
+            var colour = "#3d3d3d";
+        }
+
+        var target = links[i].target;
+        var weight = links[i].weight;
+        var found = false;
+        for (var j = 0; j < nodes.length; j++) {
+            if (nodes[j].id === target) {
+                // convert weight to int
+                nodes[j].weight += parseInt(weight);
+                found = true;
+            }
+        }
+        if (!found) {
+            nodes.push({
+                id: target,
+                weight: parseInt(weight),
+                colour: colour
+            });
+        }
+    }
+
+    //sort the nodes by weight
+    nodes.sort(function (a, b) {
+        return b.weight - a.weight;
+    });
+
+    //remove all but the first 5 nodes
+    nodes = nodes.slice(0, 5);
+
+    //create the chart using the nodes
+    var chart = new Chart(document.getElementById("sigChart"), {
+        type: 'bar',
+        data: {
+            labels: nodes.map(function (node) {
+                return node.id;
+            }),
+            datasets: [{
+                label: 'Total Interaction Weight by Character',
+                backgroundColor: nodes.map(function (node) {
+                    return node.colour;
+                }),
+                data: nodes.map(function (node) {
+                    return node.weight;
+                })
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            legend: { display: false },
+            title: {
+                display: true,
+                text: 'Total Interaction Weight'
+            }
+        }
+    });
 }
 
 /* CLAMP VALUES TO VALID RANGE */
